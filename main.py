@@ -170,7 +170,19 @@ def train_parseq(args):
     # Print current time
     ct = datetime.datetime.now()
     print(f'current time: ${ct}')
-    if args.dataset == 'Hockey':
+    if args.dataset == 'SyntheticJerseyData':
+        print("Train PARSeq for Synthetic Jerseys")
+        parseq_dir = config.str_home
+        current_dir = os.getcwd()
+        os.chdir(parseq_dir)
+        data_root = os.path.join(current_dir, config.dataset['SyntheticJerseys']['root_dir'])
+        command = f"conda run -n {config.str_env} python train.py +experiment=parseq dataset=real data.root_dir={data_root} trainer.max_epochs=25 " \
+                  f"pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=128 data.max_label_length=25" 
+        success = os.system(command) == 0
+        os.chdir(current_dir)
+        print("Done training")
+    
+    elif args.dataset == 'Hockey':
         print("Train PARSeq for Hockey")
         parseq_dir = config.str_home
         current_dir = os.getcwd()

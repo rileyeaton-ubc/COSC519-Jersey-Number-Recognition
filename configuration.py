@@ -95,5 +95,8 @@ dataset = {'SoccerNet':
                  'legibility_model_url':  "https://drive.google.com/uc?id=1RfxINtZ_wCNVF8iZsiMYuFOP7KMgqgDp",
                  'str_model': 'models\\parseq_epoch=3-step=95-val_accuracy=98.7903-val_NED=99.3952.ckpt',
                  'str_model_url': "https://drive.google.com/uc?id=1FyM31xvSXFRusN0sZH0EWXoHwDfB9WIE",
-            }
+            },
+           "SyntheticJerseys":{
+               'root_dir': 'dataSynthetic\\SyntheticJerseys'
+           }
         }
