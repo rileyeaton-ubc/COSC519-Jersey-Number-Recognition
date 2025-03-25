@@ -379,9 +379,9 @@ def soccer_net_pipeline(args):
         #8. combine tracklet results
         analysis_results = None
         #read predicted results, stack unique predictions, sum confidence scores for each, choose argmax
-        results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True)
-        #results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True)
-        #results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True)
+        results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True) # 87.6%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True) # 84.8%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True) # 85.3%
 
         # add illegible tracklet predictions
         consolidated_dict = consolidated_results(image_dir, results_dict, illegible_path, soccer_ball_list=soccer_ball_list)
@@ -418,14 +418,25 @@ if __name__ == '__main__':
 
     if not args.train_str:
         if args.dataset == 'SoccerNet':
-            actions = {"soccer_ball_filter": True,
-                       "feat": True,
-                       "filter": True,
-                       "legible": True,
+            # actions = {"soccer_ball_filter": True,
+            #            "feat": True,
+            #            "filter": True,
+            #            "legible": True,
+            #            "legible_eval": False,
+            #            "pose": True,
+            #            "crops": True,
+            #            "str": True,
+            #            "combine": True,
+            #            "eval": True}
+            # Try out specific steps
+            actions = {"soccer_ball_filter": False,
+                       "feat": False,
+                       "filter": False,
+                       "legible": False,
                        "legible_eval": False,
-                       "pose": True,
-                       "crops": True,
-                       "str": True,
+                       "pose": False,
+                       "crops": False,
+                       "str": False,
                        "combine": True,
                        "eval": True}
             args.pipeline = actions
