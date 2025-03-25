@@ -167,7 +167,12 @@ def run_full_validation(model, dataloader):
     results = []
     tracks = []
     gt = []
-
+    # load weights
+    state_dict = torch.load(load_model_path, map_location=device)
+    current_model_dict = model_ft.state_dict()
+    new_state_dict={k:v if v.size()==current_model_dict[k].size()  else  current_model_dict[k] for k,v in zip(current_model_dict.keys(), state_dict.values())}
+    model_ft.load_state_dict(new_state_dict, strict=False)
+    model_ft = model_ft.to(device)
     for inputs, track, label in dataloader:
         # print(f"input and label sizes:{len(inputs), len(labels)}")
         inputs = inputs.to(device)
@@ -470,7 +475,9 @@ if __name__ == '__main__':
             state_dict = torch.load(load_model_path, map_location=device)
             if hasattr(state_dict, '_metadata'):
                 del state_dict._metadata
-            model_ft.load_state_dict(state_dict)
+            current_model_dict = model_ft.state_dict()
+            new_state_dict={k:v if v.size()==current_model_dict[k].size()  else  current_model_dict[k] for k,v in zip(current_model_dict.keys(), state_dict.values())}
+            model_ft.load_state_dict(new_state_dict, strict=False)
 
         model_ft = model_ft.to(device)
         criterion = nn.BCELoss()
