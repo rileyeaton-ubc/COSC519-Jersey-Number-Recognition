@@ -437,7 +437,6 @@ def soccer_net_finetuned_pipeline(args):
                                   config.dataset['SoccerNet'][args.part]['illegible_result'])
     gt_path = os.path.join(config.dataset['SoccerNet']['root_dir'], config.dataset['SoccerNet'][args.part]['gt'])
 
-    # Change both to SyntheticJerseys for custom fine-tuning tests
     str_result_file = args.jersey_id_result_path
 
     #7. run STR system on all crops
@@ -445,7 +444,6 @@ def soccer_net_finetuned_pipeline(args):
         print("Predict numbers")
         image_dir = os.path.join(config.dataset['SoccerNet']['working_dir'], config.dataset['SoccerNet'][args.part]['crops_folder'])
 
-        # Change to SyntheticJerseys for custom fine-tuning tests
         command = f"conda run -n {config.str_env} python str.py {args.str_checkpoint_path}\
             --data_root={image_dir} --batch_size=1 --inference --result_file {str_result_file}"
         success = os.system(command) == 0
@@ -467,7 +465,6 @@ def soccer_net_finetuned_pipeline(args):
         consolidated_dict = consolidated_results(image_dir, results_dict, illegible_path, soccer_ball_list=soccer_ball_list)
 
         #save results as json
-        # Change both to SyntheticJerseys for custom fine-tuning tests
         final_results_path = os.path.join(config.dataset['SyntheticJerseys']['working_dir'], config.dataset['SyntheticJerseys'][args.part]['final_result'])
         print("Final results available at: ", final_results_path)
         with open(final_results_path, 'w') as f:
