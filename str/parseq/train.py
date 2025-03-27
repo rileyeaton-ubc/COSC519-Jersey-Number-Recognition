@@ -116,9 +116,9 @@ def main(config: DictConfig):
         # Special handling for GPU-affected config
         gpu = config.trainer.get('accelerator') == 'gpu'
         devices = config.trainer.get('devices', 0)
-        if gpu:
-            # Use mixed-precision training
-            config.trainer.precision = 16
+        # if gpu:
+        #     # Use mixed-precision training
+        #     config.trainer.precision = 16
         if gpu and devices > 1:
             # Use DDP
             config.trainer.strategy = 'ddp'
