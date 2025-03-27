@@ -1,5 +1,6 @@
 @REM make sure this matches the main.yaml file in parseq/configs
 set parseq_output_folder=2025-03-27_double_finetune_2
+set parseq_str_checkpoint_path=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\str\parseq\outputs\parseq\%parseq_output_folder%\checkpoints\last-v1.ckpt
 
 @REM make sure to update this in the configuration.py file in root
 set inference_output_results=jersey_id_results_test_large_doublefinetune_20ep-32bat-16pr_25ep-128bat-16pr.json
@@ -15,9 +16,9 @@ set soccernet_pretrain_precision=16
 
 @REM ----------------------------------
 @REM BELOW IS THE CODE TO NOT EDIT
-set full_inference_json_path=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\out\SoccerNetFineTunedResults\%inference_output_results%
+set inference_json_path=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\out\SoccerNetFineTunedResults\%inference_output_results%
 
-del %full_inference_json_path%
+del %inference_json_path%
 
 del /S /Q C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\str\parseq\outputs\parseq\%parseq_output_folder%\*
 
@@ -29,10 +30,7 @@ python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Doc
 
 cd ..\..
 
-@REM inference
-python str.py C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\str\parseq\outputs\parseq\%parseq_output_folder%\checkpoints\last-v1.ckpt --data_root=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\out\SoccerNetResults\crops --batch_size=1 --inference --result_file %full_inference_json_path%
-
-@REM get resulting accuracy
-python main.py SoccerNet test
+@REM inference model and get resulting accuracy
+python main.py SoccerNetFinetuned test --jersey_id_result_path %inference_json_path% --str_checkpoint_path %parseq_str_checkpoint_path%
 
 cd str\parseq
