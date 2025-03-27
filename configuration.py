@@ -28,7 +28,7 @@ dataset = {'SoccerNet':
                         'pose_input_json': 'pose_input.json',
                         'pose_output_json': 'pose_results.json',
                         'crops_folder': 'crops',
-                        'jersey_id_result': 'jersey_id_results.json',
+                        'jersey_id_result': 'jersey_id_results_test_64.json',
                         'final_result': 'final_results.json'
                     },
                  'val': {
@@ -95,5 +95,13 @@ dataset = {'SoccerNet':
                  'legibility_model_url':  "https://drive.google.com/uc?id=1RfxINtZ_wCNVF8iZsiMYuFOP7KMgqgDp",
                  'str_model': 'models\\parseq_epoch=3-step=95-val_accuracy=98.7903-val_NED=99.3952.ckpt',
                  'str_model_url': "https://drive.google.com/uc?id=1FyM31xvSXFRusN0sZH0EWXoHwDfB9WIE",
-            }
+            },
+           "SyntheticJerseys":{
+               'root_dir': 'dataSynthetic\\SyntheticJerseysLarge',
+               'working_dir': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\out\\SoccerNetFineTunedResults',
+               "numbers_data": "lmbd",
+               'test': {
+                        'final_result': 'final_test_results.json'
+                    },
+           }
         }

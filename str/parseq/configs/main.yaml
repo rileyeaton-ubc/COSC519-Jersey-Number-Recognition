@@ -48,7 +48,9 @@ pretrained: null
 hydra:
   output_subdir: config
   run:
-    dir: outputs/${model.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    # Edit this to a static directory to save the output to a consistent location
+    # dir: outputs/${model.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    dir: outputs/${model.name}/2025-03-27_double_finetune_2
   sweep:
     dir: multirun/${model.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
     subdir: ${hydra.job.override_dirname}

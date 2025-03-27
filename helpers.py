@@ -492,6 +492,7 @@ def process_jersey_id_predictions_raw(file_path, useTS = False ):
             raw_result = apply_bias(raw_result)
 
         all_results[tracklet].append(raw_result)
+        print(f'{name}: {raw_result}\n------------------------------------')
 
     final_full_results = {}
     for tracklet in all_results.keys():

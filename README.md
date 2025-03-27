@@ -38,23 +38,23 @@ Alternatively, clone each of the following repo, setup conda environments for ea
 
 ### SAM:
 
-Should be in jersey-number-pipeline/sam. Repo: [https://github.com/davda54/sam](https://github.com/davda54/sam)
+Should be in COSC519-Jersey-Number-Recognition/sam. Repo: [https://github.com/davda54/sam](https://github.com/davda54/sam)
 
 ### Centroid-Reid:
 
-Should be in jersey-number-pipeline/reid/centroids-reid. Repo: [https://github.com/mikwieczorek/centroids-reid](https://github.com/mikwieczorek/centroids-reid).
+Should be in COSC519-Jersey-Number-Recognition/reid/centroids-reid. Repo: [https://github.com/mikwieczorek/centroids-reid](https://github.com/mikwieczorek/centroids-reid).
 Download [centroid-reid model weights](https://drive.google.com/file/d/1bSUNpvMfJkvCFOu-TK-o7iGY1p-9BxmO/view?usp=sharing) and place
-them under jersey-number-pipeline/reid/centroids-reid/models.
+them under COSC519-Jersey-Number-Recognition/reid/centroids-reid/models.
 
 ### ViTPose:
 
-Should be in jersey-number-pipeline/pose/ViTPose. Repo: [https://github.com/ViTAE-Transformer/ViTPose](https://github.com/ViTAE-Transformer/ViTPose).
+Should be in COSC519-Jersey-Number-Recognition/pose/ViTPose. Repo: [https://github.com/ViTAE-Transformer/ViTPose](https://github.com/ViTAE-Transformer/ViTPose).
 Download [ViTPose model weights](https://1drv.ms/u/s!AimBgYV7JjTlgShLMI-kkmvNfF_h?e=dEhGHe) and place
-them under jersey-number-pipeline/pose/ViTPose/checkpoints/.
+them under COSC519-Jersey-Number-Recognition/pose/ViTPose/checkpoints/.
 
 ### PARSeq:
 
-We include the version of the PARSeq code that was used to fine-tune the jersey number model as part of this repo. The original PARSeq repo is [https://github.com/baudm/parseq](https://github.com/baudm/parseq). Model weights should be downloaded and placed under jersey-number-pipeline/models/.
+We include the version of the PARSeq code that was used to fine-tune the jersey number model as part of this repo. The original PARSeq repo is [https://github.com/baudm/parseq](https://github.com/baudm/parseq). Model weights should be downloaded and placed under COSC519-Jersey-Number-Recognition/models/.
 
 - [Original model weights](https://drive.google.com/file/d/1AK_GnM6pIYyfIf3tBYSKIyR3Fa3Z46Cx/view?usp=sharing)
 - [Hockey fine-tuned](https://drive.google.com/file/d/1FyM31xvSXFRusN0sZH0EWXoHwDfB9WIE/view?usp=sharing)
@@ -75,7 +75,7 @@ Hockey (comprised of legibility dataset and jersey number dataset):
 
 ### Trained Legibility Classifier Weights:
 
-Download and place under jersey-number-pipeline/models/.
+Download and place under COSC519-Jersey-Number-Recognition/models/.
 
 - [Hockey](https://drive.google.com/file/d/1RfxINtZ_wCNVF8iZsiMYuFOP7KMgqgDp/view?usp=sharing)
 - [SoccerNet](https://drive.google.com/file/d/18HAuZbge3z8TSfRiX_FzsnKgiBs-RRNw/view?usp=sharing)

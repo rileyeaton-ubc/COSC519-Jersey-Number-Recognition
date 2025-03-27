@@ -6,6 +6,7 @@ import os
 import fire
 import lmdb
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 
 
@@ -32,7 +33,7 @@ def createDataset(inputPath, gtFile, outputPath, checkValid=True):
         checkValid : if true, check the validity of every image
     """
     os.makedirs(outputPath, exist_ok=True)
-    env = lmdb.open(outputPath, map_size=1099511627776)
+    env = lmdb.open(outputPath, map_size=10737418240)
 
     cache = {}
     cnt = 1
@@ -40,10 +41,10 @@ def createDataset(inputPath, gtFile, outputPath, checkValid=True):
     with open(gtFile, 'r', encoding='utf-8') as f:
         data = f.readlines()
 
-    nSamples = len(data)
-    for i, line in enumerate(data):
+    print(f"Creating LMDB dataset at {outputPath}...")
+    nSamples = len(data)    
+    for i, line in enumerate(tqdm(data)):
         imagePath, label = line.strip().split(maxsplit=1)
-        imagePath = os.path.join(inputPath, imagePath)
         with open(imagePath, 'rb') as f:
             imageBin = f.read()
         if checkValid:

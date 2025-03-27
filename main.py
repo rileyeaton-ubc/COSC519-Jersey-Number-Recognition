@@ -170,7 +170,19 @@ def train_parseq(args):
     # Print current time
     ct = datetime.datetime.now()
     print(f'current time: ${ct}')
-    if args.dataset == 'Hockey':
+    if args.dataset == 'SyntheticJerseyData':
+        print("Train PARSeq for Synthetic Jerseys")
+        parseq_dir = config.str_home
+        current_dir = os.getcwd()
+        os.chdir(parseq_dir)
+        data_root = os.path.join(current_dir, config.dataset['SyntheticJerseys']['root_dir'], config.dataset['SyntheticJerseys']['numbers_data'])
+        command = f"conda run -n {config.str_env} python train.py +experiment=parseq dataset=real data.root_dir={data_root} trainer.max_epochs=25 " \
+                  f"pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=32 data.max_label_length=25" 
+        success = os.system(command) == 0
+        os.chdir(current_dir)
+        print("Done training")
+    
+    elif args.dataset == 'Hockey':
         print("Train PARSeq for Hockey")
         parseq_dir = config.str_home
         current_dir = os.getcwd()
@@ -379,15 +391,82 @@ def soccer_net_pipeline(args):
         #8. combine tracklet results
         analysis_results = None
         #read predicted results, stack unique predictions, sum confidence scores for each, choose argmax
-        results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True)
-        #results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True)
-        #results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True)
+        results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True) # 87.6%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True) # 84.8%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True) # 85.3%
 
         # add illegible tracklet predictions
         consolidated_dict = consolidated_results(image_dir, results_dict, illegible_path, soccer_ball_list=soccer_ball_list)
 
         #save results as json
         final_results_path = os.path.join(config.dataset['SoccerNet']['working_dir'], config.dataset['SoccerNet'][args.part]['final_result'])
+        print("Final results available at: ", final_results_path)
+        with open(final_results_path, 'w') as f:
+            json.dump(consolidated_dict, f)
+        print("Done combining tracklet results")
+        # Print current time
+        ct = datetime.datetime.now()
+        print(f'current time: ${ct}')
+
+    if args.pipeline['eval'] and success:
+        #9. evaluate accuracy
+        if consolidated_dict is None:
+            with open(final_results_path, 'r') as f:
+                consolidated_dict = json.load(f)
+        with open(gt_path, 'r') as gf:
+            gt_dict = json.load(gf)
+        print(len(consolidated_dict.keys()), len(gt_dict.keys()))
+        helpers.evaluate_results(consolidated_dict, gt_dict, full_results = analysis_results)
+        # Print current time
+        ct = datetime.datetime.now()
+        print(f'current time: ${ct}')
+
+
+def soccer_net_finetuned_pipeline(args):
+    consolidated_dict = None
+    Path(config.dataset['SoccerNet']['working_dir']).mkdir(parents=True, exist_ok=True)
+    success = True
+    # Print current time
+    ct = datetime.datetime.now()
+    print(f'current time: ${ct}')
+
+    image_dir = os.path.join(config.dataset['SoccerNet']['root_dir'], config.dataset['SoccerNet'][args.part]['images'])
+    soccer_ball_list = os.path.join(config.dataset['SoccerNet']['working_dir'],
+                                      config.dataset['SoccerNet'][args.part]['soccer_ball_list'])
+    illegible_path = os.path.join(config.dataset['SoccerNet']['working_dir'],
+                                  config.dataset['SoccerNet'][args.part]['illegible_result'])
+    gt_path = os.path.join(config.dataset['SoccerNet']['root_dir'], config.dataset['SoccerNet'][args.part]['gt'])
+
+    str_result_file = args.jersey_id_result_path
+
+    #7. run STR system on all crops
+    if args.pipeline['str'] and success:
+        print("Predict numbers")
+        image_dir = os.path.join(config.dataset['SoccerNet']['working_dir'], config.dataset['SoccerNet'][args.part]['crops_folder'])
+
+        command = f"conda run -n {config.str_env} python str.py {args.str_checkpoint_path}\
+            --data_root={image_dir} --batch_size=1 --inference --result_file {str_result_file}"
+        success = os.system(command) == 0
+        print("Done predict numbers")
+        # Print current time
+        ct = datetime.datetime.now()
+        print(f'current time: ${ct}')
+
+    #str_result_file = os.path.join(config.dataset['SoccerNet']['working_dir'], "val_jersey_id_predictions.json")
+    if args.pipeline['combine'] and success:
+        #8. combine tracklet results
+        analysis_results = None
+        #read predicted results, stack unique predictions, sum confidence scores for each, choose argmax
+        results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True) # 87.6%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True) # 84.8%
+        # results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True) # 85.3%
+
+        # add illegible tracklet predictions
+        consolidated_dict = consolidated_results(image_dir, results_dict, illegible_path, soccer_ball_list=soccer_ball_list)
+
+        #save results as json
+        final_results_path = os.path.join(config.dataset['SyntheticJerseys']['working_dir'], config.dataset['SyntheticJerseys'][args.part]['final_result'])
+        print("Final results available at: ", final_results_path)
         with open(final_results_path, 'w') as f:
             json.dump(consolidated_dict, f)
         print("Done combining tracklet results")
@@ -413,6 +492,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', help="Options: 'SoccerNet', 'Hockey'")
     parser.add_argument('part', help="Options: 'test', 'val', 'train', 'challenge")
+    parser.add_argument('--jersey_id_result_path', help="The full desired path to the json file that will store str jersey inference results")
+    parser.add_argument('--str_checkpoint_path', help="The full path to the parseq checkpoint that will be used for str")
     parser.add_argument('--train_str', action='store_true', default=False, help="Run training of jersey number recognition")
     args = parser.parse_args()
 
@@ -430,6 +511,12 @@ if __name__ == '__main__':
                        "eval": True}
             args.pipeline = actions
             soccer_net_pipeline(args)
+        elif args.dataset == 'SoccerNetFinetuned':
+            actions = {"str": True,
+                       "combine": True,
+                       "eval": True}
+            args.pipeline = actions
+            soccer_net_finetuned_pipeline(args)
         elif args.dataset == 'Hockey':
             actions = {"legible": True,
                        "str": True}
