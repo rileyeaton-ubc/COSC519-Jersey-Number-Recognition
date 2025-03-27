@@ -100,10 +100,8 @@ dataset = {'SoccerNet':
                'root_dir': 'dataSynthetic\\SyntheticJerseysLarge',
                'working_dir': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\out\\SoccerNetFineTunedResults',
                "numbers_data": "lmbd",
-               "str_model": "C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\str\\parseq\\outputs\\parseq\\2025-03-26_23-01-53\\checkpoints\\last.ckpt",
                'test': {
-                        'jersey_id_result': 'jersey_id_results_test_large_doublefinetune_20ep-32bat-16pr_25ep-128bat-16pr.json',
-                        'final_result': 'final_results.json'
+                        'final_result': 'final_test_results.json'
                     },
            }
         }
