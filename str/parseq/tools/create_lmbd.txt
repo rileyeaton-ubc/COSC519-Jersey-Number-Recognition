@@ -1,0 +1,11 @@
+--------------- TEST ---------------
+
+python create_lmdb_dataset.py --inputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\all\image --gtFile C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\gt_test.txt --outputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\lmbd\test --checkValid true
+
+--------------- TRAIN ---------------
+
+python create_lmdb_dataset.py --inputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\all\image --gtFile C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\gt_train.txt --outputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\lmbd\train\real --checkValid true
+
+--------------- VAL ---------------
+
+python create_lmdb_dataset.py --inputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\all\image --gtFile C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\gt_val.txt --outputPath C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\lmbd\val --checkValid true
