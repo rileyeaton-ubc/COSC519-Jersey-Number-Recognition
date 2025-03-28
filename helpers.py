@@ -677,7 +677,7 @@ def evaluate_results(consolidated_dict, gt_dict, full_results = None):
                 #print(f"track {m} , true label {gt_dict[m]}; predictions {full_results[m]}")
                 if gt_dict[m] in full_results[m]['unique']:
                     count_of_correct_in_full_results += 1
-        #print(f"track {m} , true label {gt_dict[m]}; prediction {consolidated_dict[m]}")
+        print(f"track {m} , true label {gt_dict[m]}; prediction {consolidated_dict[m]}")
     #print(f'mismarked {illegible_mistake_count} out of {len(mistakes)} as illegible')
     #print(f'mismarked {illegible_gt_count} out of {len(mistakes)} as legible')
     #print(f"predicted correctly but not picked: {count_of_correct_in_full_results}")
