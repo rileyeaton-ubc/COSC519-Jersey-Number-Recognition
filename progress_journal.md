@@ -1,5 +1,9 @@
 # Team 5 Progress Journal
 
+- Riley Eaton
+- Aidan Elliott
+- Jerry Fan
+
 ## Team Meeting Notes
 
 ### Meeting 1 - January 21st
@@ -86,7 +90,7 @@
   - Replacing ResNet34 with a more advanced model, such as ResNet101, for the legibility classifier.
   - The suggestion to allocate tasks based on pipeline components was discussed and may be adopted once all members have a clearer understanding of potential improvements.
 
-Aiden proposed enhancing the legibility classifier to filter out more images earlier in the pipeline, thereby reducing resource consumption.
+Aidan proposed enhancing the legibility classifier to filter out more images earlier in the pipeline, thereby reducing resource consumption.
 
 #### Tasks for Next Week:
 
@@ -122,13 +126,12 @@ Aiden proposed enhancing the legibility classifier to filter out more images ear
 
 - Discuss progress on our initial attempt at improving the pipeline.
 - Address any challenges encountered and help each other where needed.
--
 
 ## Meeting 6 - March 10th
 
 ### Key Points Discussed:
 
-- Riley tried Resnet101 for the legibility classifier but it took wayyyyyy too long
+- Riley tried Resnet101 for the legibility classifier but it took significantly too much time
 - Aidan working on the synthetic image generation
 - Jerry working on implementing CLIP
 - Somebody else using best GPU at BCCancer so not able to use best compute power available
@@ -137,8 +140,8 @@ Aiden proposed enhancing the legibility classifier to filter out more images ear
 
 ### Key Points
 
-- Aidan finished his algorithim to generate images. It generates with randomness in color, angle, shear, and size of numbers on jersey. Adds random background based on image net
-- Riley tried 64bit floating point percision training. It took a lot longer to train, but gave suprisingly very good results, imrpoving a full %point.
+- Aidan finished his algorithm to generate images. It generates with randomness in color, angle, shear, and size of numbers on jersey. Adds random background based on image net
+- Riley tried 64bit floating point precision training. It took a lot longer to train, but gave surprisingly very good results, improving a full %point.
 
 ### Agenda for next meeting
 
@@ -150,8 +153,8 @@ Aiden proposed enhancing the legibility classifier to filter out more images ear
 
 - Figured out how to train parseq on new data
 - tested synthetic images in very small dataset. Found it performed worse. Adjusted generation to add brightness and color randomness, and generated 100k images rather than ~2k
-- Noticed that some of the dataset is mislabled, definately interesting to look through. Some outputs were -1 when jersey was very clearly visible
-- Found an issue with the prediciton consolidation if only one unique prediction it produces -1 rather than the prediction
+- Noticed that some of the dataset is mislabeled, definitely interesting to look through. Some outputs were -1 when jersey was very clearly visible
+- Found an issue with the prediction consolidation if only one unique prediction it produces -1 rather than the prediction
 
 ### Agenda
 
@@ -166,6 +169,6 @@ Aiden proposed enhancing the legibility classifier to filter out more images ear
 
 ### Agenda for next meeting
 
-- Discuss using syntehtic jerseys on resnet. Triaging poorly generated images manually and use them for legibility classifying. Won't be ready for presentation but maybe for report
+- Discuss using synthetic jerseys on resnet. Triaging poorly generated images manually and use them for legibility classifying. Won't be ready for presentation but maybe for report
 - Get more images/graphs to use
 - Creating a live demo via creating a one image inference pipeline
