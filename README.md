@@ -1,3 +1,23 @@
+# COSC 419/519: Deep Learning - Final Project
+
+**Team 5 Members**:
+
+- Riley Eaton
+- Aidan Elliott
+- Jerry Fan
+
+## Overview
+
+This repository contains our implementation for the SoccerNet Jersey Number Recognition Challenge 2023. The project focuses on developing deep learning models to recognize jersey numbers in soccer videos.
+
+**[Presentation Slides](https://docs.google.com/presentation/d/1E6w9ZxSIpjbnsacmmY-_TsmpW2CoBNmIKtT7rU5nqu8/edit?usp=sharing)**
+
+**[Weekly Progress Journal](progress_journal.md)**
+
+We achieved a result of 86.04% accuracy on the challenge set through evalai, the original pipeline presented here achieved 79.31% accuracy on the challenge set. More information and/or files (`json` results, model checkpoints, etc.) are available upon request, some of them are simply too large for github
+
+The original README can be found below:
+
 # A General Framework for Jersey Number Recognition in Sports
 
 Code, data, and model weights for paper [A General Framework for Jersey Number Recognition in Sports](https://openaccess.thecvf.com/content/CVPR2024W/CVsports/papers/Koshkina_A_General_Framework_for_Jersey_Number_Recognition_in_Sports_Video_CVPRW_2024_paper.pdf) (Maria Koshkina, James H. Elder).

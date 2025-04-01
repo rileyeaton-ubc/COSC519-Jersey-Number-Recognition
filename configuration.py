@@ -28,8 +28,8 @@ dataset = {'SoccerNet':
                         'pose_input_json': 'pose_input.json',
                         'pose_output_json': 'pose_results.json',
                         'crops_folder': 'crops',
-                        'jersey_id_result': 'jersey_id_results_test_64.json',
-                        'final_result': 'final_results.json'
+                        'jersey_id_result': 'test_jersey_id_results.json',
+                        'final_result': 'test_final_results.json'
                     },
                  'val': {
                         'images': 'val\\images',
@@ -101,7 +101,7 @@ dataset = {'SoccerNet':
                'working_dir': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\out\\SoccerNetFineTunedResults',
                "numbers_data": "lmbd",
                'test': {
-                        'final_result': 'final_test_results.json'
+                        'final_result': 'synthetic_final_results.json'
                     },
            }
         }
