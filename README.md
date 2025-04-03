@@ -6,6 +6,9 @@
 - Aidan Elliott
 - Jerry Fan
 
+EvalAI test results [on public leaderboard](https://eval.ai/web/challenges/challenge-page/1952/leaderboard/4625)
+EvalAI challenge result: **86.04%**
+
 ## Overview
 
 This repository contains our implementation for the SoccerNet Jersey Number Recognition Challenge 2023. The project focuses on developing deep learning models to recognize jersey numbers in soccer videos.
