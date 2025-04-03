@@ -7,6 +7,7 @@
 - Jerry Fan
 
 EvalAI test results [on public leaderboard](https://eval.ai/web/challenges/challenge-page/1952/leaderboard/4625)
+
 EvalAI challenge result: **86.04%**
 
 ## Overview
