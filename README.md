@@ -16,6 +16,8 @@ This repository contains our implementation for the SoccerNet Jersey Number Reco
 
 We achieved a result of 86.04% accuracy on the challenge set through evalai, the original pipeline presented here achieved 79.31% accuracy on the challenge set. More information and/or files (`json` results, model checkpoints, etc.) are available upon request, some of them are simply too large for github
 
+Unfortunately, in its current state there are many hardcoded paths given the original repository was designed for use on a linux-based system, whereas most of our development was on a windows machine.
+
 The original README can be found below:
 
 # A General Framework for Jersey Number Recognition in Sports
