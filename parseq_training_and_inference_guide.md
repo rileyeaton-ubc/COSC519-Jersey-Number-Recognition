@@ -12,7 +12,7 @@ Run these in **/str/parseq**
 - **data location** = \data\SoccerNet
 
 ```
-python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNet\lmdb trainer.max_epochs=25 pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=128 data.max_label_length=25 +trainer.precision=16
+python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNet\lmdb trainer.max_epochs=25 pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=128 data.max_label_length=2 +trainer.precision=16
 ```
 
 ### for custom synthetic data
@@ -23,7 +23,7 @@ python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Doc
 - **data location** = \dataSynthetic\SyntheticJerseysLarge
 
 ```
-python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\lmbd trainer.max_epochs=10 pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=32 data.max_label_length=25 +trainer.precision=64
+python train.py +experiment=parseq dataset=real data.root_dir=C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\dataSynthetic\SyntheticJerseysLarge\lmbd trainer.max_epochs=10 pretrained=parseq trainer.accelerator=gpu trainer.devices=1 trainer.val_check_interval=1 data.batch_size=32 data.max_label_length=2 +trainer.precision=64
 ```
 
 ## Run the model inference
