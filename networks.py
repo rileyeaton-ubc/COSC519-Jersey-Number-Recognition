@@ -2,6 +2,8 @@ import torch.nn as nn
 from torch import sigmoid
 import torch.nn.functional as F
 from torchvision import models
+from torchvision.models.resnet import ResNet34_Weights
+from torchvision.models.resnet import ResNet50_Weights
 
 class JerseyNumberClassifier(nn.Module):
 
@@ -96,6 +98,34 @@ class LegibilityClassifier34(nn.Module):
 
     def forward(self, x):
         x = self.model_ft(x)
+        x = sigmoid(x)
+        return x
+    
+class LegibilityClassifier50(nn.Module):
+    def __init__(self, train=False, finetune=False):
+        super().__init__()
+        # Load the pre-trained ResNet-50 model
+        self.model_ft = models.resnet50(weights=ResNet50_Weights.DEFAULT)
+
+        # Freeze all layers initially if finetune
+        if finetune:
+            for param in self.model_ft.parameters():
+                param.requires_grad = False 
+
+        # Get the number of input features for the original fully connected layer
+        num_ftrs = self.model_ft.fc.in_features
+
+        # Replace the original fully connected layer with a new one for binary classification (1 output neuron)
+        self.model_ft.fc = nn.Linear(num_ftrs, 1)
+
+        # Ensure the new fully connected layer and the last convolutional block (layer4) are trainable
+        self.model_ft.fc.requires_grad = True
+        self.model_ft.layer4.requires_grad = True
+
+    def forward(self, x):
+        # Pass the input through the modified ResNet-50 model
+        x = self.model_ft(x)
+        # Apply the sigmoid activation function for binary classification
         x = sigmoid(x)
         return x
 
