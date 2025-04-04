@@ -20,6 +20,10 @@ python main.py Hockey train --train_str
 python legibility_classifier.py --finetune --arch resnet34 --sam --data C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNetLegibility --full_val_dir C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNetLegibility\val --trained_model_path C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\experiments\hockey_legibility.pth --new_trained_model_path C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\experiments\sn_legibility.pth
 ```
 
+### ResNet 50
+
+python legibility_classifier.py --finetune --arch resnet50 --sam --data C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNetLegibility --full_val_dir C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\data\SoccerNetLegibility\val --trained_model_path C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\experiments\hockey_legibility.pth --new_trained_model_path C:\Users\Riley\Documents\UBC\GitHub\COSC519-Jersey-Number-Recognition\experiments\legibility_resnet50_20ep.pth
+
 ## Fine-tune PARSeq on weakly-labelled SoccerNet data:
 
 ```

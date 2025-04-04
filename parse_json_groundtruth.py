@@ -1,9 +1,9 @@
 import json
 import random
 
-json_path = 'dataSynthetic\\SyntheticJerseysLarge\\all\\groundtruth.json'
-images_folder = 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\dataSynthetic\\SyntheticJerseysLarge\\all\\image'
-output_txt_path = 'dataSynthetic\\SyntheticJerseysLarge'
+json_path = 'dataSynthetic\\SyntheticJerseysFinal\\all\\groundtruth.json'
+images_folder = 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\dataSynthetic\\SyntheticJerseysFinal\\all\\image'
+output_txt_path = 'dataSynthetic\\SyntheticJerseysFinal'
 image_type = "png"
 
 with open(json_path, 'r', encoding='utf-8') as f:
