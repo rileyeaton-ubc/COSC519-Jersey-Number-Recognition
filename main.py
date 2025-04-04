@@ -8,6 +8,7 @@ import helpers
 from tqdm import tqdm
 import configuration as config
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 def get_soccer_net_raw_legibility_results(args, use_filtered = True, filter = 'gauss', exclude_balls=True):
     root_dir = config.dataset['SoccerNet']['root_dir']
@@ -184,6 +185,7 @@ def train_parseq(args):
         success = os.system(command) == 0
         os.chdir(current_dir)
         print("Done training")
+
     else:
         print("Train PARSeq for Soccer")
         parseq_dir = config.str_home
@@ -248,7 +250,15 @@ def soccer_net_pipeline(args):
                               config.dataset['SoccerNet'][args.part]['pose_input_json'])
     output_json = os.path.join(config.dataset['SoccerNet']['working_dir'],
                                config.dataset['SoccerNet'][args.part]['pose_output_json'])
-
+    
+    # Show a gif of the full tracklet
+    if (args.part == "demo"):
+        print("------------ SHOWING FULL TRACKLET ------------")
+        demo_tracklet_num = config.dataset['SoccerNet']['demo']['demo_tracklet']
+        full_tracklet_path = os.path.join(image_dir, demo_tracklet_num)
+        helpers.animate_tracklet(folder=full_tracklet_path, time=10, title=f"Tracklet {demo_tracklet_num}")
+        print("-----------------------------------------------")
+    
     # 1. Filter out soccer ball based on images size
     if args.pipeline['soccer_ball_filter']:
         print("Determine soccer ball")
@@ -278,6 +288,18 @@ def soccer_net_pipeline(args):
         ct = datetime.datetime.now()
         print(f'current time: ${ct}')
 
+        # Show a gif of the tracklet with the outliers removed (main subject filtering)
+        if (args.part == "demo"):
+            print("------------ SHOWING TRACKLET WITH OUTLIERS REMOVED ------------")
+            path_to_filter_results = os.path.join(config.dataset['SoccerNet']['working_dir'],
+                                                config.dataset['SoccerNet'][args.part]['gauss_filtered'])
+            with open(path_to_filter_results, 'r') as f:
+                data = json.load(f)
+            filtered_images = data[demo_tracklet_num]
+            filtered_images_with_path = [os.path.join(full_tracklet_path, image) for image in filtered_images]
+            helpers.animate_tracklet(file_paths=filtered_images_with_path, time=10, title=f"Tracklet {demo_tracklet_num} with outliers removed")
+            print("----------------------------------------------------------------")
+
     #3. pass all images through legibililty classifier and record results
     if args.pipeline['legible'] and success:
         print("Classifying Legibility:")
@@ -292,6 +314,13 @@ def soccer_net_pipeline(args):
         # Print current time
         ct = datetime.datetime.now()
         print(f'current time: ${ct}')
+
+        # Show a gif of the tracklet with the outliers and illegible images removed
+        if (args.part == "demo"):
+            print("------------ SHOWING TRACKLET WITH OUTLIERS AND ILLEGIBLE IMAGES REMOVED ------------")
+            legible_images = legible_dict[demo_tracklet_num]
+            helpers.animate_tracklet(file_paths=legible_images, time=5, title=f"Tracklet {demo_tracklet_num} only legible images")
+            print("------------------------------------------------------------------------ ------------")
 
     #3.5 evaluate tracklet legibility results
     if args.pipeline['legible_eval'] and success:
@@ -361,12 +390,20 @@ def soccer_net_pipeline(args):
         # Print current time
         ct = datetime.datetime.now()
         print(f'current time: ${ct}')
+    
+        # Show a gif of the tracklet with only cropped images
+        if (args.part == "demo"):
+            print("------------ SHOWING TRACKLET CROPPED IMAGES ------------")
+            demo_tracklet_num = config.dataset['SoccerNet']['demo']['demo_tracklet']
+            helpers.animate_tracklet(folder=crops_destination_dir, time=5, title=f"Tracklet {demo_tracklet_num} cropped, legible images")
+            print("---------------------------------------------------------")
 
     str_result_file = os.path.join(config.dataset['SoccerNet']['working_dir'],
                                    config.dataset['SoccerNet'][args.part]['jersey_id_result'])
     #7. run STR system on all crops
     if args.pipeline['str'] and success:
         print("Predict numbers")
+        print("using model: ", config.dataset['SoccerNet']['str_model'])
         image_dir = os.path.join(config.dataset['SoccerNet']['working_dir'], config.dataset['SoccerNet'][args.part]['crops_folder'])
 
         command = f"conda run --live-stream -n {config.str_env} python -u str.py {config.dataset['SoccerNet']['str_model']}\
@@ -376,6 +413,47 @@ def soccer_net_pipeline(args):
         # Print current time
         ct = datetime.datetime.now()
         print(f'current time: ${ct}')
+
+        # Show all numbers predicted
+        if (args.part == "demo"):
+            print("------------ SHOWING PREDICTED NUMBER JITTERPLOT ------------")
+            # Load the JSON data from the file
+            with open(str_result_file, 'r') as f:
+                data = json.load(f)
+            # Prepare lists to store labels and average confidences
+            labels = []
+            avg_confidences = []
+            # Iterate through each image entry in the JSON
+            for image, details in data.items():
+                label = details.get("label", "")
+                confidences = details.get("confidence", [])
+                # Calculate the average confidence if available
+                avg_conf = sum(confidences) / len(confidences) if confidences else 0
+                labels.append(label)
+                avg_confidences.append(avg_conf)
+            # Map unique labels to x axis
+            unique_labels = sorted(set(labels), key=int)
+            label_to_x = {label: i for i, label in enumerate(unique_labels)}
+            # Create x values with a jitter to avoid overlap
+            x_values = [label_to_x[label] + np.random.uniform(-0.2, 0.2) for label in labels]
+            y_values = avg_confidences
+            # Create the jitter plot
+            plt.figure(figsize=(20, 10))
+            # Set the plotted points to be somewhat transparent
+            plt.scatter(x_values, y_values, alpha=0.3, s=80)
+            # Start the y axis at 0.6
+            plt.ylim(bottom=.6)
+            # Add vertical grid lines for each label
+            plt.grid(True, axis='x', alpha=0.5)
+            # Label and title the graph
+            plt.xlabel("Predicted Label (jersey number)", fontsize=14)
+            plt.ylabel("Average Confidence (between bins)", fontsize=14)
+            plt.title(f"Jitter Plot of Every STR Prediction For Tracklet {demo_tracklet_num} Against Average Confidence (Above 60%)", fontsize=18)
+            plt.xticks(list(label_to_x.values()), list(label_to_x.keys()), fontsize=12)
+            plt.yticks(fontsize=12)
+            # Show the plot
+            plt.show()
+            print("-------------------------------------------------------------")
 
     #str_result_file = os.path.join(config.dataset['SoccerNet']['working_dir'], "val_jersey_id_predictions.json")
     if args.pipeline['combine'] and success:
@@ -399,7 +477,15 @@ def soccer_net_pipeline(args):
         ct = datetime.datetime.now()
         print(f'current time: ${ct}')
 
-    if args.pipeline['eval'] and success:
+    # Show final prediction
+    if (args.part == "demo"):
+        print("------------ FINAL PREDICTED NUMBER FOR THE TRACKLET ------------")
+        print(consolidated_dict[demo_tracklet_num])
+        print("-----------------------------------------------------------------")
+
+        # helpers.show_gif(image_dir)
+
+    if args.pipeline['eval'] and success and args.part != "challenge":
         #9. evaluate accuracy
         if consolidated_dict is None:
             with open(final_results_path, 'r') as f:
@@ -453,6 +539,7 @@ def soccer_net_finetuned_pipeline(args):
 
         #read predicted results, stack unique predictions, sum confidence scores for each, choose argmax
         results_dict, analysis_results = helpers.process_jersey_id_predictions(str_result_file, useBias=True) # 87.6%
+        # print(analysis_results[0])
         # results_dict, analysis_results = helpers.process_jersey_id_predictions_raw(str_result_file, useTS=True) # 84.8%
         # results_dict, analysis_results = helpers.process_jersey_id_predictions_bayesian(str_result_file, useTS=True, useBias=True, useTh=True) # 85.3%
 
@@ -484,7 +571,7 @@ def soccer_net_finetuned_pipeline(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('dataset', help="Options: 'SoccerNet', 'SoccerNetFinetuned', 'Hockey'")
+    parser.add_argument('dataset', help="Options: 'SoccerNet', 'SoccerNetFinetuned', 'Hockey', 'demo'")
     parser.add_argument('part', help="Options: 'test', 'val', 'train', 'challenge")
     parser.add_argument('--jersey_id_result_path', help="The full desired path to the json file that will store str jersey inference results")
     parser.add_argument('--str_checkpoint_path', help="The full path to the parseq checkpoint that will be used for str")
@@ -493,6 +580,7 @@ if __name__ == '__main__':
 
     if not args.train_str:
         if args.dataset == 'SoccerNet':
+            # Run full pipeline
             actions = {"soccer_ball_filter": True,
                        "feat": True,
                        "filter": True,
@@ -503,6 +591,9 @@ if __name__ == '__main__':
                        "str": True,
                        "combine": True,
                        "eval": True}
+            # Run only str model to predict jersey numbers
+            # actions = {"soccer_ball_filter": False,"feat": False,"filter": False,"legible": False,
+            #            "legible_eval": False,"pose": False,"crops": False,"str": True,"combine": True, "eval": True}
             args.pipeline = actions
             soccer_net_pipeline(args)
         elif args.dataset == 'SoccerNetFinetuned':
