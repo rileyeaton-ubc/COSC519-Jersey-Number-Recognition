@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+Full Pipeline Accuracy (challenge vs test set)
+
+\begin{tabular}{|l|c|c|}
+
+\hline
+\textbf{Method} & \textbf{Test Acc} & \textbf{Challenge Acc} \\
+\hline
+Gerke et al  & 32.57\% & 35.79\% \\
+Vats et al  & 46.73\% & 49.88\% \\
+Li et al    & 47.85\% & 50.60\% \\
+Vats et al  & 52.91\% & 58.45\% \\
+Balaji et al & 68.53\% & 73.77\% \\
+\hline
+\textbf{Ours}    & \textbf{87.45\%} & \textbf{79.31\%} \\
+\hline
+\end{tabular}
+
+\vspace{1cm}
+
+Full Pipeline Accuracy (test set)
+
+\begin{tabular}{|l|c|}
+
+  \hline
+  \textbf{Method} & \textbf{Test Accuracy} \\
+  \hline
+  Orignal (out-of-the-box)  & 80.51\% \\
+  Fine-tune on Hockey       & 83.90\% \\
+  Fine-tune on SoccerNet    & 87.45\%  \\
+  \hline
+  Our initial run & 86.70\%  \\
+  \textbf{Our fine-tune on SoccerNet} & \textbf{87.60\%}  \\
+  \hline
+  \end{tabular}
+
+\vspace{1cm}
+
+Full Pipeline Accuracy (challenge vs test set)
+
+\begin{tabular}{|l|c|c|}
+
+  \hline
+  \textbf{Method} & \textbf{Test Acc} & \textbf{Challenge Acc} \\
+  \hline
+  Gerke et al  & 32.57\% & 35.79\% \\
+  Vats et al  & 46.73\% & 49.88\% \\
+  Li et al    & 47.85\% & 50.60\% \\
+  Vats et al  & 52.91\% & 58.45\% \\
+  Balaji et al & 68.53\% & 73.77\% \\
+  \hline
+  Koshkina and Elder & 87.45\% & 79.31\% \\
+  \hline
+  \textbf{Ours} & \textbf{88.69\%} & \textbf{86.04\%} \\
+  \hline
+  \end{tabular}
+  
+
+\end{document}
