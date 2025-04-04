@@ -161,4 +161,4 @@ cython_debug/
 .idea/
 
 # Token file
-tokens.txt
+*token*.txt
