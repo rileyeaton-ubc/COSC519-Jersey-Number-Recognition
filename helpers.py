@@ -12,6 +12,11 @@ import random
 import shutil
 from pathlib import Path
 from scipy.special import softmax as softmax
+import glob
+import re
+import imageio
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 json_img_template = { "id": 0,
             "file_name": "",
@@ -243,6 +248,47 @@ def get_bias(value):
         return 0.61
     else:
         return 0.39
+
+# SUM_THRESHOLD = 1
+# SINGLE_THRESHOLD = 0.90
+# FILTER_THRESHOLD = 0.2
+# def find_best_prediction(results, useBias=False, tracklet=-1):
+#     if tracklet == "111":
+#         print("tracklet 111 result:")
+#         for result in results:
+#             print(result[0], result[1])
+#             # This prints: 34.0 0.9974006127815684
+#     if FILTER_THRESHOLD > 0:
+#         for entry in results:
+#             if entry[1] < FILTER_THRESHOLD:
+#                 entry[1] = 0
+#     unique_predictions = np.unique(results[:, 0])
+#     if tracklet == "111":
+#         print(unique_predictions)
+#         # This prints: [34.]
+    
+#     weights = []
+#     if len(unique_predictions) == 1:
+#         # only one prediction, return it if it is above the special threshold
+#         only_prediction = unique_predictions[0]
+#         only_confidence = results[np.where(results[:,0]==only_prediction)]
+#         only_confidence_avg = np.mean(only_confidence[:, 1])
+#         best_prediction = only_prediction if only_confidence_avg > SINGLE_THRESHOLD else -1
+#     else:
+#         for i in range(len(unique_predictions)):
+#             value = unique_predictions[i]
+#             rows_with_value = results[np.where(results[:,0]==value)]
+#             b = get_bias(value) if useBias else 1
+#             adjusted_prob = rows_with_value[:, 1] * b
+#             sum_weights = np.sum(adjusted_prob)
+#             weights.append(sum_weights)
+
+#         best_weight = np.max(weights)
+#         index_of_best = np.argmax(weights)
+#         best_prediction = unique_predictions[index_of_best] if best_weight > SUM_THRESHOLD else -1
+#         if tracklet == "111":
+#             print(f"Best prediction: {best_prediction}, weight: {best_weight}, all unique: {unique_predictions}, weights: {weights}")
+#             # This prints: Best prediction: -1, weight: 0.6084143737967568, all unique: [34.], weights: [0.6084143737967568]
 
 SUM_THRESHOLD = 1
 FILTER_THRESHOLD = 0.2
@@ -566,11 +612,11 @@ def process_jersey_id_predictions(file_path, useBias=False):
             continue
         results = np.array(all_results[tracklet])
 
+        # best_prediction, all_unique, weights = find_best_prediction(results, useBias=useBias, tracklet=tracklet)
         best_prediction, all_unique, weights = find_best_prediction(results, useBias=useBias)
-
         #best_prediction, all_unique, weights = find_best_prediction_with_vector(results)
-        final_results[tracklet] = str(int(best_prediction))
-        final_full_results[tracklet] = {'label':  str(int(best_prediction)), 'unique': all_unique, 'weights':weights}
+        final_results[tracklet] = int(best_prediction)
+        final_full_results[tracklet] = {'label':  int(best_prediction), 'unique': all_unique, 'weights':weights}
 
     return final_results, final_full_results
 
@@ -661,7 +707,7 @@ def evaluate_results(consolidated_dict, gt_dict, full_results = None):
             #print(predicted, gt_dict[id])
             mistakes.append(id)
         total += 1
-    print(f"Total number of trackslets: {total}, correct: {correct}, accuracy: {100.0 * correct/total}%")
+    print(f"Mistakes: {len(mistakes)}")
     #print(f"Tracklets with mistakes: {mistakes}")
     illegible_mistake_count = 0
     illegible_gt_count = 0
@@ -678,6 +724,7 @@ def evaluate_results(consolidated_dict, gt_dict, full_results = None):
                 if gt_dict[m] in full_results[m]['unique']:
                     count_of_correct_in_full_results += 1
         print(f"track {m} , true label {gt_dict[m]}; prediction {consolidated_dict[m]}")
+    print(f"Total number of tracklets predicted: {total}, correct: {correct}, accuracy: {100.0 * correct/total}%")
     #print(f'mismarked {illegible_mistake_count} out of {len(mistakes)} as illegible')
     #print(f'mismarked {illegible_gt_count} out of {len(mistakes)} as legible')
     #print(f"predicted correctly but not picked: {count_of_correct_in_full_results}")
@@ -804,6 +851,63 @@ def generate_crops_based(source, target, splits):
     for split in splits:
         print(f"Processing {split}")
         generate_crops_for_split(source, target, split)
+
+
+def extract_number(file_path):
+    # Extract digits after an underscore.
+    match = re.search(r'(?<=_)\d+', os.path.basename(file_path))
+    return int(match.group(0)) if match else -1
+
+# Folder to animate a tracklet of images 
+def animate_tracklet(folder=None, file_paths=None, fps=None, interval=50, time=None, title=None):
+    # Using a folder:
+    # display_animation(folder="path/to/your/images")
+    # Or using an explicit list of file paths:
+    # display_animation(file_paths=["image1.png", "image2.png", "image3.png"])
+
+    # If fps is provided, calculate the interval in milliseconds.
+    if fps is not None:
+        interval = int(1000 / fps)
+
+    # If file paths are provided, sort them 
+    if file_paths is None:
+        # Get sorted file paths if a folder is passed
+        if folder is None:
+            raise ValueError("Provide either a folder or a list of image file paths.")
+        # Retrieve image file paths and sort numerically by the extracted number.
+        file_paths = sorted(glob.glob(os.path.join(folder, "*.jpg")), key=extract_number)
+    else:
+        file_paths = sorted(file_paths, key=extract_number)
+
+    
+    # Load images
+    frames = [imageio.imread(fp) for fp in file_paths]
+    print(f"Total frames: {len(frames)}")
+    
+    if time is not None:
+        # Convert time to milliseconds and calculate the interval.
+        time = int(time * 1000)
+        interval = int(time / len(frames))
+
+    # Plot the figure
+    fig = plt.figure(figsize=(5, 10))
+
+    # Create the image plot object once
+    im = plt.imshow(frames[0])
+    plt.title(title if title else "Tracklet Gif", fontsize=16)
+    plt.axis('off')
+    
+    # Define what will update each frame 
+    def update(frame_index):
+        im.set_array(frames[frame_index])
+    
+    # Create the animation 
+    ani = animation.FuncAnimation(fig, update, frames=len(frames), interval=interval, blit=False)
+    
+    # Show the plot in non-blocking mode.
+    plt.show()
+    plt.pause(0.2)
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
