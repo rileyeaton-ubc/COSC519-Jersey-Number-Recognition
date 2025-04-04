@@ -28,8 +28,8 @@ dataset = {'SoccerNet':
                         'pose_input_json': 'pose_input.json',
                         'pose_output_json': 'pose_results.json',
                         'crops_folder': 'crops',
-                        'jersey_id_result': 'test_jersey_id_results.json',
-                        'final_result': 'test_final_results.json'
+                        'jersey_id_result': 'test_jersey_id_results_64.json',
+                        'final_result': 'test_final_results_64.json'
                     },
                  'val': {
                         'images': 'val\\images',
@@ -49,14 +49,14 @@ dataset = {'SoccerNet':
                      'images': 'train\\images',
                      'gt': 'train\\train_gt.json',
                      'feature_output_folder': 'out\\SoccerNetResults\\train',
-                     'illegible_result': 'illegible_train.json',
-                     'legible_result': 'legible_train.json',
+                     'illegible_result': 'illegible_train_resnet34.json',
+                     'legible_result': 'legible_train_resnet34.json',
                      'soccer_ball_list': 'soccer_ball_train.json',
                      'sim_filtered': 'train\\main_subject_0.4.json',
                      'gauss_filtered': 'train\\main_subject_gauss_th=3.5_r=3.json',
                      'pose_input_json': 'pose_input_train.json',
                      'pose_output_json': 'pose_results_train.json',
-                     'raw_legible_result': 'train_raw_legible_combined.json'
+                     'raw_legible_result': 'train_raw_legible_combined_resnet34.json'
                  },
                  'challenge': {
                         'images': 'challenge\\images',
@@ -70,10 +70,27 @@ dataset = {'SoccerNet':
                         'pose_input_json': 'challenge_pose_input.json',
                         'pose_output_json': 'challenge_pose_results.json',
                         'crops_folder': 'challenge_crops',
-                        'jersey_id_result': 'challenge_jersey_id_results.json',
-                        'final_result': 'challenge_final_results.json',
+                        'jersey_id_result': 'challenge_jersey_id_results_64.json',
+                        'final_result': 'challenge_final_results_64.json',
                         'raw_legible_result': 'challenge_raw_legible_vit.json'
                  },
+                 'demo': {
+                        'images': 'demo',
+                        'feature_output_folder': 'out\\SoccerNetResults\\demo',
+                        'gt': 'demo\\demo_gt.json',
+                        'illegible_result': 'demo_illegible.json',
+                        'soccer_ball_list': 'demo_soccer_ball.json',
+                        'sim_filtered': 'demo\\main_subject_0.4.json',
+                        'gauss_filtered': 'demo\\main_subject_gauss_th=3.5_r=3.json',
+                        'legible_result': 'demo_legible.json',
+                        'pose_input_json': 'demo_pose_input.json',
+                        'pose_output_json': 'demo_pose_results.json',
+                        'crops_folder': 'demo_crops',
+                        'jersey_id_result': 'demo_jersey_id_results.json',
+                        'final_result': 'demo_final_results.json',
+                        'raw_legible_result': 'demo_raw_legible_vit.json',
+                        'demo_tracklet': "1082"
+                    },
                  'numbers_data': 'lmdb',
 
                  'legibility_model': "experiments\\sn_legibility.pth",
@@ -81,10 +98,12 @@ dataset = {'SoccerNet':
 
                  'legibility_model_url':  "https://drive.google.com/uc?id=18HAuZbge3z8TSfRiX_FzsnKgiBs-RRNw",
                  'pose_model_url': 'https://drive.google.com/uc?id=1A3ftF118IcxMn_QONndR-8dPWpf7XzdV',
-                 'str_model': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\models\\soccernet-personal\\parseq_epoch=22-step=2369-val_accuracy=95.5357-val_NED=96.3599.ckpt',
+
+                #  'str_model': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\models\\soccernet-personal\\parseq_epoch=22-step=2369-val_accuracy=95.5357-val_NED=96.3599.ckpt',
+                 'str_model': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\models\\soccernet-personal\\parseq_64bitprecision.ckpt',
 
                  #'str_model': 'pretrained=parseq',
-                 'str_model_url': "https://drive.google.com/uc?id=1uRln22tlhneVt3P6MePmVxBWSLMsL3bm",
+                #  'str_model_url': "https://drive.google.com/uc?id=1uRln22tlhneVt3P6MePmVxBWSLMsL3bm",
                 },
            "Hockey": {
                  'root_dir': 'data\\Hockey',
@@ -97,11 +116,11 @@ dataset = {'SoccerNet':
                  'str_model_url': "https://drive.google.com/uc?id=1FyM31xvSXFRusN0sZH0EWXoHwDfB9WIE",
             },
            "SyntheticJerseys":{
-               'root_dir': 'dataSynthetic\\SyntheticJerseysLarge',
+            #    'root_dir': 'dataSynthetic\\SyntheticJerseysLarge',
+            #    "numbers_data": "lmbd",
                'working_dir': 'C:\\Users\\Riley\\Documents\\UBC\\GitHub\\COSC519-Jersey-Number-Recognition\\out\\SoccerNetFineTunedResults',
-               "numbers_data": "lmbd",
                'test': {
-                        'final_result': 'synthetic_final_results.json'
+                        'final_result': 'synthetic_final_results_final.json'
                     },
            }
         }
