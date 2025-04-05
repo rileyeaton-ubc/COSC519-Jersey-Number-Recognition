@@ -14,6 +14,8 @@ EvalAI challenge result: **86.04%**
 
 This repository contains our implementation for the SoccerNet Jersey Number Recognition Challenge 2023. The project focuses on developing deep learning models to recognize jersey numbers in soccer videos.
 
+**[Final Report](docs/report/report.pdf)**
+
 **[Presentation Slides](https://docs.google.com/presentation/d/1E6w9ZxSIpjbnsacmmY-_TsmpW2CoBNmIKtT7rU5nqu8/edit?usp=sharing)**
 
 **[Weekly Progress Journal](progress_journal.md)**
