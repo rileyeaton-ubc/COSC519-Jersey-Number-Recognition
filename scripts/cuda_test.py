@@ -32,7 +32,7 @@ if (cuda.is_available()):
 else:
   print("CUDA is NOT available")
 
-# Riley's 4070:
+# 4070:
 #   GPU compute capability:  (8, 9)
 #   GPU total number of  Streaming MultiProcessors (SMs):  46
 #   Total Stream Processor (SP) cores:  5888
