@@ -5,3 +5,7 @@
 *.fdb_latexmk
 *.log
 *.aux
+
+# For BibTex
+*.blg
+*.bbl
