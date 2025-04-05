@@ -18,7 +18,7 @@ This repository contains our implementation for the SoccerNet Jersey Number Reco
 
 **[Presentation Slides](https://docs.google.com/presentation/d/1E6w9ZxSIpjbnsacmmY-_TsmpW2CoBNmIKtT7rU5nqu8/edit?usp=sharing)**
 
-**[Weekly Progress Journal](progress_journal.md)**
+**[Weekly Progress Journal](docs/progress-journal/progress_journal.md)**
 
 We achieved a result of 86.04% accuracy on the challenge set through evalai, the original pipeline presented here achieved 79.31% accuracy on the challenge set. More information and/or files (`json` results, model checkpoints, etc.) are available upon request, some of them are simply too large for github
 
