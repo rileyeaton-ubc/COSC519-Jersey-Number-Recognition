@@ -8,7 +8,7 @@
 
 EvalAI test results [on public leaderboard](https://eval.ai/web/challenges/challenge-page/1952/leaderboard/4625): 88.69%
 
-EvalAI challenge result: **86.04%**
+EvalAI challenge result: **86.04%** ([verified EvalAI output file](https://evalai.s3.amazonaws.com/media/submission_files/submission_503523/1b5b6636-a642-4490-9bd8-67120830fe24.txt))
 
 ## Overview
 
