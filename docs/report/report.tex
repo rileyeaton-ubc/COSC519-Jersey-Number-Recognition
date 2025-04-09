@@ -9,7 +9,7 @@
 
 \begin{titlepage}
   \begin{center}
-      \vspace*{1cm}
+      \vspace*{2cm}
       
       \fontsize{14}{14}\textbf{Jersey Number Recognition:} \\
       \vspace{0.1cm}
@@ -24,7 +24,7 @@
       COSC 419/519: Deep Learning \\
       University of British Columbia \\
       Kelowna, BC \\
-      \today
+      April 8, 2025
 
   \end{center}
 \end{titlepage}
@@ -71,17 +71,17 @@ We believe the biggest issue with the original pipeline architecture was the lac
 
 The dataset used by Bhargavi was not publicly available, so we created my own algorithm to generate the images. The algorithm first generates two random digits, and places them on a solid colour background. The Freshman font was used as it better mimics what a jersey number looks like. Each digit undergoes scaling, shearing, and rotation to mimic how a player's jersey will be transformed in a real image. Each transformation parameter follows a uniform distribution and is truncated to prevent any completely unreasonable results. A random level of Gaussian blue is also added to mimic the distance at which the camera is from the player. Since the VitPose will not create a perfect bounding box of the jersey, we place our synthetic jersey on top of a random image pulled from a subset of ImageNet mimic noise in the background. Any sort of multi-class image dataset would have probably sufficed, ImageNet was just a convenient diverse set of image classes.
 
-With this algorithm, we can produce an entire dataset to train PARSeq. After some initial tests to make sure it was compatible, we created 100,000 images (~1000 images per digit) with a diverse set of positioning, transformations, and blurs. After this experiment, we also modified the algorithm to reduce the width of the jerseys so that the digits were far closer together and more resembled a jersey. We retrained this model using 10,000 of the new synthetic images followed by SoccerNet fine-tuning on the PARSeq64 model. An example of these images can be seen is Figure \ref{fig:synthetic_example}.
+With this algorithm, we can produce an entire dataset to train PARSeq. After some initial tests to make sure it was compatible, we created 100,000 images (~1000 images per digit) with a diverse set of positioning, transformations, and blurs. After this experiment, we also modified the algorithm to reduce the width of the jerseys so that the digits were far closer together and more resembled a jersey. We retrained this model using 10,000 of the new synthetic images followed by SoccerNet fine-tuning. An example of these images can be seen is Figure \ref{fig:synthetic_example}.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.5\linewidth]{img/synthetic_example.png}
-  \caption{\label{fig:synthetic_example}\textit{Example of generated images from our synthetic dataset.}}
+  \caption{\label{fig:synthetic_example}\textit{Some example images from our synthetically generated dataset.}}
 \end{figure}
 
 \subsubsection{Training Precision}
 
-When reviewing the source code of the original pipeline, it was apparent that the fine-tuning for PARSeq was hardware contrained. This is because not only did they specifically choose DDP as the training strategy — which is a dedicated method for utilizing multiple GPUs — but they also chose to use 16 bit mixed-precision training. This uses BF16 floating point numbers to reduce the amount of memory in training, but it comes with the downside of less accuracy. We decided that 32 or 64 bit true precision training would be beneficial to our model's performance, even if only slightly. This is primarily due to the fact higher precision arithmetic is less likely to round values to 0 when they are very small. This reduced rounding error leads to less gradient underflow, resulting in a more accurate model.
+When reviewing the source code of the original pipeline, it was apparent that the fine-tuning for PARSeq was hardware constrained. This is because not only did they specifically choose DDP as the training strategy — which is a dedicated method for utilizing multiple GPUs — but they also chose to use 16 bit mixed-precision training. This uses BF16 floating point numbers to reduce the amount of memory in training, but it comes with the downside of less accuracy. We decided that true 32 or 64 bit precision training would be beneficial to our model's performance, even if only slightly. This is primarily due to the fact higher precision arithmetic is less likely to round values to 0 when they are very small. This reduced rounding error leads to less gradient underflow, resulting in a more accurate model.
 
 \subsubsection{CLIP Integration}
 
@@ -100,11 +100,88 @@ Koshkina and Elder indicated that the heuristic consolidation overperformed the 
 
 \subsection{Initial Replication Results}
 
+Our initial results for replicating the pipeline used the pre-trained model checkpoints provided in Koshkina and Elder's GitHub repository \cite{original_pipeline_repo}. These resulted in a slight decrease accuracy of 0.75\% on the test set, for the entire pipeline. After this, we decided to re-fine-tune the STR and legibility models by running the training procedure provided. However, there were many hurdles in getting the training to run. Initially the training script was riddled with errors, mostly due to outdated libraries. Additionally, the code was developed with a linux development environment in mind (filepaths specifically). This was an issue because one of our group members who has access to a significant GPU for training train, uses Windows. It took some time to iteratively solve these issues, but we were eventually able to get the training to successfully complete. Below are tables illustrating our inference results, and the required time for each step of training, respectively: 
+
+\begin{center}
+  \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Method} & \textbf{Test Accuracy} \\
+    \hline
+    Orignal (out-of-the-box)  & 80.51\% \\
+    Fine-tune on Hockey       & 83.90\% \\
+    Fine-tune on SoccerNet    & 87.45\%  \\
+    \hline
+    Our initial run & 86.70\%  \\
+    \textbf{Our fine-tune on SoccerNet} & \textbf{87.60\%}  \\
+    \hline
+  \end{tabular}
+\end{center}
+\begin{center}
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Training Task} & \textbf{Epochs} & \textbf{Final Loss} & \textbf{Training Time} \\
+    \hline
+    Hockey legibility classifier                      & 10 & 0.001 & $<$ 1 min \\
+    Soccer legibility classifier (using weak labels)  & 10 & 0.062 & 2 hours, 25 mins \\
+    Fine-tune PARSeq (STR) on SoccerNet               & 25 & 0.0139 & 1 hour, 51 mins \\
+    \hline
+    Total training time & - & - & \textbf{4 hours, 16 mins}  \\
+    \hline
+  \end{tabular}
+\end{center}
+
+This small improvement of 0.15\% in model performance from the original paper after our fine-tuning is likely due to updated libraries such as CUDA, and not truly significant.
+
+After this, we also noticed there was no mention in the original paper of fine-tuning the STR model on both SoccerNet and Hockey image datasets. We decided to try this experiment to see if the Hockey jerseys could improve PARSeq's performance on SoccerNet. Unfortunately, it led to a decrease of 0.81\% in performance, down to 86.79\% accuracy on the test set. We believe this decrease was caused by the very distinct jersey number features present in the two datasets.
+
 \subsection{Synthetic Generation Results}
 
-The first iteration of our testing trained on 100,000 images before being fine-tuned on SoccerNet. The result was rather disappointing, reducing test accuracy by 0.32\% to 87.6\%. This was not a significant decrease, but still did not improve the results very much. After updating the generation algorithm to include more noise, brightness and color changes, and bringing the digits closer together, we generated another 10,000 images. A new model was trained on these images then once again SoccerNet. These results came out worse, decreasing 0.92\% when compared to our best model. The paper our method is based on used 400,000 images to train their model, so more images were likely needed to produce better results. Unfortunately, we were restricted by time to reach that amount of images.
+The first iteration of our testing on the synthetic dataset involved a fine-tune of PARSeq on 100,000 images before being fine-tuned again on SoccerNet. The result was rather disappointing, reducing test accuracy by 0.32\% to 87.28\%. This was not a significant decrease, but still did not improve the results very much. After updating the generation algorithm to include more noise, brightness and color changes, and bringing the digits closer together, we generated another 10,000 images. A new model was trained on these images then once again SoccerNet. These results came out worse, decreasing 0.92\% when compared to our best model. The paper our method is based on used 400,000 images to train their model, so more images were likely needed to produce better results. Unfortunately, we were restricted by the limited time available, and were not able to generate that many images.
 
 \subsection{PARSeq64 Results}
+
+Surprisingly, the most significant improvements to the pipeline were realized using true 64 bit precision training when fine-tuning PARSeq on the SoccerNet dataset. We call the output model (checkpoint) of this fine-tuning, PARSeq64. This model was trained for 15 epochs, and achieved a test accuracy of 88.69\% on the test set, and 86.04\% on the challenge set. This is a very impressive improvement over the original pipeline's accuracy, especially on the challenge set, being able to accurately predict 6.73\% more jersey numbers correctly. The results of our PARSeq64 model compared to the work from Koshkina and Elder, and previous works can be seen in table below, which is amended from the original paper \cite{main_paper}:
+
+\begin{center}
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Method} & \textbf{Test Accuracy} & \textbf{Challenge Accuracy} \\
+    \hline
+    Gerke et al.  & 32.57\% & 35.79\% \\
+    Vats et al.  & 46.73\% & 49.88\% \\
+    Li et al.    & 47.85\% & 50.60\% \\
+    Vats et al.  & 52.91\% & 58.45\% \\
+    Balaji et al. & 68.53\% & 73.77\% \\
+    \hline
+    Koshkina and Elder & 87.45\% & 79.31\% \\
+    \hline
+    \textbf{Ours} & \textbf{88.69\%} & \textbf{86.04\%} \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\begin{center}
+  \textit{The above test set accuracy of our PARSeq64 model has been validated by EvalAI, and the output file for the submission is publicly available \underline{\href{https://evalai.s3.amazonaws.com/media/submission_files/submission_503522/62c51842-1475-414e-94cf-373e5d51920e.txt}{at this link}}. As well, the output file for our challenge set evaluation using PARSeq64 is available \underline{\href{https://evalai.s3.amazonaws.com/media/submission_files/submission_503523/1b5b6636-a642-4490-9bd8-67120830fe24.txt}{at this link}}}
+\end{center}
+
+Although these results are impressive, it is important to note that the training took significantly longer because of this increase in precision. Averaged over all epochs, the original 16 bit mixed precision training took 4.5 minutes per epoch on our NVIDIA 4070 GPU, while the true 64 bit training increased to 45 minutes per epoch. This 10 times slower training time is a significant drawback, however, it is slightly mitigated by requiring fewer total epochs for convergence. The original model saw its best performance at 25 epochs, while our PARSeq64 model converged at 15 epochs. This resulted in a total time increase for training of 6 times the original pipeline. Given the total training time was just over 11 hours, this was still acceptable for us given the compelling increase in performance. 
+
+To summarize our results, the final accuracy of our most critical tests can be compared to that of the original pipeline in the following table, sorted in ascending order of accuracy:
+
+\begin{center}
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Method} & \textbf{Test Accuracy} & \textbf{Challenge Accuracy} \\
+    \hline
+    Our initial replication (out-of-the-box models) & 86.70\% & - \\
+    Our SoccerNet and Hockey fine-tune & 86.79\% & - \\
+    Our synthetic image fine-tune & 87.28\% & - \\
+    \textbf{Koshkina and Elder} & \textbf{87.45\%} & \textbf{79.31\%} \\
+    Our first local fine-tune & 87.60\% & - \\
+    \textbf{Our PARSeq64 fine-tune} & \textbf{88.69\%} & \textbf{86.04\%} \\
+    \hline
+    \end{tabular}
+\end{center}
 
 % -------------------------- DISCUSSION --------------------------
 \section{Discussion}
@@ -141,12 +218,17 @@ Upon analyzing the incorrectly predicted tracklets, a trend appears. Of the trac
 
 Overall, training on the synthetically generated jersey dataset did not improve the accuracy of the STR model. It instead reduced performance by roughly 1\%. There are plenty of potential reasons why the dataset did not improve performance like it did in Bhargavi's paper. We suspect this is mainly due to more randomness in the scaling and level of noise required. We discovered later in our research that PARSeq was already somewhat accurate in predicting numbers at this level of distortion, so the images did not have anything useful for the model learn, ultimately contributing features that only served as distractions. Additionally, in extreme cases, the random affine transformation caused the number to be cut off from the jersey, effectively causing the synthetic image to be mislabelled. This occurred in a small subset of the synthetic dataset, but still enough to cause potential issues.
 
-Considering the conversation in 5.3, it is important to note that the majority of errors made by PARSeq are from tracklets which either have predicted -1, or have a label of -1. This means that improvements made to the STR model can only be realized to a degree, as incorrectly labelled images as illegible do not even get assessed by it. Also, it is important to note how imbalanced the dataset is. The majority of jerseys are biased towards single digit, low double digits (10-20), or repeated digits (i.e 55, 66). There simply are not many players who want to have “72” or “89” on the back of their jersey, and the dataset would likely contain at most 2-3 tracklets for these numbers. Also, this dataset is not comprised of enough games to provide a breadth of examples for many possible numbers. Using synthetic jerseys to create more examples can help the model generalize for less frequent numbers.
+Considering the conversation in 5.3, it is important to note that the majority of errors made by PARSeq are from tracklets which either have predicted -1, or have a label of -1. This means that improvements made to the STR model can only be realized to a degree, as incorrectly labelled images as illegible do not even get assessed by it. Also, it is important to note how imbalanced the dataset is. The majority of jerseys are biased towards single digit, low double digits (10-20), or repeated digits (i.e 55, 66). There simply are not many players who want to have “72” or “89” on the back of their jersey, and the dataset would likely contain at most 2 to 3 tracklets for these numbers. Also, this dataset is not comprised of enough games to provide a breadth of examples for many possible numbers. Using synthetic jerseys to create more examples can help the model generalize for less frequent numbers.
 
 % -------------------------- FUTURE WORK --------------------------
 \section{Future Work}
 
-Another interesting avenue of research we explored was using a Stable Diffusion image generation model to create a synthetic dataset for fine-tuning. Some basic experimentation showed that simple prompt engineering could create a solid example for a model to train on. The example shown below would undoubtedly provide more detail for the model to learn from, when compared to a those from a pseudo-random image generator such as the one we developed. Our result leads us to believe that with some experimental prompt engineering and a state-of-the-art transformer-based image generation model, an entire dataset could be created to further fine-tune models within the pipeline. However, this does bring with it a plethora of other issues such as the bias of the generation model, but with generative AI getting better each day, the use of these synthetic images to train other prediction models will certainly become a reality.
+In future efforts to improve this jersey number recognition pipeline, we believe that the most important step is to improve the legibility classifier. This initial and crucial step in the pipeline has proven to be a significant area for improvement, and if it is not accurate, the rest of the pipeline will not be able to produce any better results. As discussed, using a larger dataset of soccer jerseys, with more diverse classes (number combinations, jersey colors, jersey patterns, background variations, etc.) would allow a fine-tuned model to learn more critical features, allowing it to ultimately improve in more complex scenarios.
+
+We had also previously mentioned the notion that in a real setting, the distribution of numbers on player jerseys will not be equally weighted for all possible numbers (0 through 99). The reasons for this branch out into the field of psychology, and cannot be effectively discussed here. However, if we were aware of the true nature of this distribution, synthetic datasets could be created that are more representative of the real world, likely leading to increased performance in real settings.
+
+Another interesting avenue of research we explored was using a Stable Diffusion image generation model to create a synthetic dataset for fine-tuning. Some basic experimentation showed that simple prompt engineering could create a solid example for a model to train on. The example in Figure \ref{fig:gemini_jersey} would undoubtedly provide more detail for the model to learn from, when compared to a those from a pseudo-random image generator such as the one we developed. Our result leads us to believe that with some experimental prompt engineering and a state-of-the-art transformer-based image generation model, an entire dataset could be created to further fine-tune models within the pipeline. However, this does bring with it a plethora of other issues such as the bias of the generation model, but with generative AI getting better each day, the use of these synthetic images to train other prediction models will certainly become a reality.
+
 \begin{figure}
   \centering
   \includegraphics[width=0.5\linewidth]{img/gemini_jersey.jpg}
